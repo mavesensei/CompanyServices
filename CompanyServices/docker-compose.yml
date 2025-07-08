@@ -1,0 +1,32 @@
+services:
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sql2022
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=StrongPassword123!
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql-data:/var/opt/mssql
+
+  companyservicesapi:
+    build: .
+    depends_on:
+      - mssql
+    ports:
+      - "5056:5056"
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=mssql;Database=CompanyService;User Id=sa;Password=StrongPassword123!;TrustServerCertificate=True;
+      - ASPNETCORE_ENVIRONMENT=Development
+    
+  redis:
+    image: redis
+    container_name: redis
+    ports:
+      - "6379:6379"
+
+
+
+volumes:
+  mssql-data:
